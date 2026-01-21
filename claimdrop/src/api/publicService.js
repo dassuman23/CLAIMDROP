@@ -57,3 +57,19 @@ export const verifyPickup = (dropId, otp) => {
         body: JSON.stringify({ drop_id: dropId, otp })
     });
 };
+
+export const getImpactStats = () => {
+    return fetchWithAuth('/api/receivers/impact-stats');
+};
+
+export const getMyDrops = () => {
+    return fetchWithAuth('/api/donors/my-drops');
+};
+
+// Create a new drop (This triggers the backend OTP generation)
+export const createDrop = (dropData) => {
+    return fetchWithAuth('/api/donors/drop', {
+        method: 'POST',
+        body: JSON.stringify(dropData)
+    });
+};

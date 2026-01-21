@@ -1,11 +1,12 @@
 "use client";
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
+// Import the new service instead of direct Supabase
+import { createDrop } from '@/api/publicService'; 
 import { motion, AnimatePresence } from 'framer-motion';
-import { Package, MapPin, Clock, X, CheckCircle } from 'lucide-react';
+import { Package, Clock, X } from 'lucide-react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
-export default function NewDropForm({ donorId, onComplete, onClose }) {
+export default function NewDropForm({ onComplete, onClose }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   
@@ -19,26 +20,20 @@ export default function NewDropForm({ donorId, onComplete, onClose }) {
     e.preventDefault();
     setLoading(true);
 
-    // Calculate expiry timestamp
-    const expiryTime = new Date();
-    expiryTime.setHours(expiryTime.getHours() + parseInt(formData.expiry_hours));
+    try {
+      // We no longer calculate time or insert directly here.
+      // We send the raw data to the server-side controller.
+      const result = await createDrop(formData);
 
-    const { error } = await supabase.from('drops').insert([{
-      donor_id: donorId,
-      title: formData.title,
-      quantity: formData.quantity,
-      expiry_time: expiryTime.toISOString(),
-      status: 'AVAILABLE'
-    }]);
-
-    if (!error) {
-      setSuccess(true);
-      setTimeout(() => {
-        onComplete();
-        onClose();
-      }, 2000);
-    } else {
-      alert(error.message);
+      if (result.success) {
+        setSuccess(true);
+        setTimeout(() => {
+          onComplete();
+          onClose();
+        }, 2000);
+      }
+    } catch (err) {
+      alert(err.message || "Failed to broadcast drop.");
       setLoading(false);
     }
   };

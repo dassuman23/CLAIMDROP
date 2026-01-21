@@ -1,11 +1,10 @@
 import express from 'express';
 const router = express.Router();
 import { createDrop, getDonorStats } from '../controllers/donorController.js';
+import { checkAuth } from '../middleware/authMiddleware.js';
+router.post('/drop', checkAuth, createDrop);
 
-// POST /api/receivers/claim - Rider claims a drop
-router.post('/claim', createDrop);
 
-// POST /api/receivers/verify - Verify OTP at the donor location
-router.post('/verify', getDonorStats);
+router.post('/get', checkAuth, getDonorStats);
 
 export default router;

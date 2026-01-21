@@ -15,7 +15,7 @@ export default function DonorView({ profile }) {
   async function fetchMyDrops() {
     const { data } = await supabase
       .from('drops')
-      .select('*')
+      .select('*, pickup_code')
       .eq('donor_id', profile.id)
       .order('created_at', { ascending: false });
     setDrops(data || []);
@@ -68,6 +68,12 @@ export default function DonorView({ profile }) {
                       <p className="text-sm text-slate-500 font-medium">{drop.quantity} • Created {new Date(drop.created_at).toLocaleTimeString()}</p>
                     </div>
                   </div>
+                  {drop.status === 'AVAILABLE' && (
+                    <div className="mt-4 p-3 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verification Code</p>
+                      <p className="text-2xl font-black text-slate-900 tracking-widest flex items-center justify-center">{drop.pickup_code}</p>
+                    </div>
+                  )}
                   <div className="flex items-center gap-4">
                     <span className={`px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-tighter ${drop.status === 'AVAILABLE' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400'}`}>
                       {drop.status}
